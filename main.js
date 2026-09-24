@@ -277,9 +277,7 @@
   });
 
   /* ---------- About ---------- */
-  gsap.fromTo(".about__frame", { clipPath: "inset(100% 0 0 0 round 300px 300px 28px 28px)" }, { clipPath: "inset(0% 0 0 0 round 300px 300px 28px 28px)", duration: 1.6, ease: "expo.inOut", scrollTrigger: { trigger: ".about__frame", start: "top 80%" } });
-  gsap.fromTo("#aboutImg", { yPercent: -12 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".about", start: "top bottom", end: "bottom top", scrub: true } });
-  gsap.from(".about__chip", { y: 140, rotate: 8, ease: "none", scrollTrigger: { trigger: ".about", start: "top bottom", end: "center center", scrub: true } });
+  gsap.fromTo(".about__frame", { clipPath: "inset(100% 0 0 0 round 28px)" }, { clipPath: "inset(0% 0 0 0 round 28px)", duration: 1.6, ease: "expo.inOut", scrollTrigger: { trigger: ".about__frame", start: "top 80%" } });
   gsap.from(".about__halo", { scale: .3, opacity: 0, ease: "none", scrollTrigger: { trigger: ".about", start: "top bottom", end: "center center", scrub: true } });
 
   /* ---------- Destinations ---------- */
