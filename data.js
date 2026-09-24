@@ -5,7 +5,7 @@ window.PROJECTS = [
     location: "Coral Golf Resort · Cabeza de Toro, Punta Cana",
     type: "Condo",
     stage: "Sur plan",
-    price: "159 500 $",
+    price: "159 500 $ US",
     cover: "assets/sun-garden-1.jpg",
     gallery: [
       "assets/sun-garden-1.jpg",
@@ -19,13 +19,13 @@ window.PROJECTS = [
   {
     id: "moon-garden-2",
     name: "Moon Garden 2",
-    location: "Coral Golf Resort · Punta Cana",
+    location: "Coral Golf Resort · Cabeza de Toro, Punta Cana",
     type: "Condo",
     stage: "Sur plan",
-    price: "Sur demande",
+    price: "283 500 $ US",
     cover: "assets/moon-building.jpg",
     gallery: ["assets/moon-building.jpg", "assets/moon-garden-2.jpg", "assets/mathieu-on-site.jpg"],
-    pitch: "La deuxième phase de Moon Garden : architecture en courbes, grande piscine centrale et unités pensées pour la location courte durée. Mathieu a visité le bureau de ventes et la maquette.",
+    pitch: "La deuxième phase de Moon Garden à Coral Golf Resort : une piscine privée pour chaque unité, une gestion hôtelière Garrya (Banyan Group) et un programme locatif géré.",
   },
   {
     id: "ac-residences",
@@ -33,7 +33,7 @@ window.PROJECTS = [
     location: "Cap Cana, République dominicaine",
     type: "Condo · Résidence de marque",
     stage: "Sur plan",
-    price: "552 900 $",
+    price: "552 900 $ US",
     cover: "assets/sunset/2026-09-02-1536x1089.jpg",
     gallery: [
       "assets/sunset/2026-09-02-1536x1089.jpg",
@@ -42,7 +42,7 @@ window.PROJECTS = [
       "assets/sunset/2026-09-04-584x438.jpg",
       "assets/sunset/2026-09-06-584x438.jpg",
     ],
-    pitch: "Une résidence signée Marriott au cœur de Cap Cana : la force d'une marque hôtelière mondiale, pour un investissement qui se loue et se revend avec assurance.",
+    pitch: "Seulement 60 résidences à Cap Cana, à quelques pas de la plage Juanillo et face au golf, avec les services d'une marque hôtelière Marriott.",
   },
   {
     id: "bonita-beach",
@@ -50,7 +50,7 @@ window.PROJECTS = [
     location: "Cap Cana, République dominicaine",
     type: "Condo",
     stage: "Sur plan",
-    price: "359 000 $",
+    price: "359 000 $ US",
     cover: "assets/sunset/2026-09-3-1536x1119.jpg",
     gallery: [
       "assets/sunset/2026-09-3-1536x1119.jpg",
@@ -59,7 +59,7 @@ window.PROJECTS = [
       "assets/sunset/2026-09-4-584x438.jpg",
       "assets/sunset/2026-09-6-584x438.jpg",
     ],
-    pitch: "La vie de plage à Cap Cana, dans un format condo accessible. Un projet pour profiter de l'hiver et louer le reste de l'année.",
+    pitch: "Sur le golf Las Iguanas à Cap Cana, près de la plage Juanillo et d'une lagune cristalline : un format condo pour profiter de l'hiver au soleil.",
   },
   {
     id: "cap-cana-villas",
@@ -67,7 +67,7 @@ window.PROJECTS = [
     location: "Cap Cana, République dominicaine",
     type: "Villa de luxe",
     stage: "Sur plan",
-    price: "3 700 000 $",
+    price: "3 700 000 $ US",
     cover: "assets/sunset/2026-09-1-1536x864.jpg",
     gallery: [
       "assets/sunset/2026-09-1-1536x864.jpg",
@@ -75,7 +75,7 @@ window.PROJECTS = [
       "assets/sunset/2026-09-5-1536x1033.jpg",
       "assets/sunset/2026-09-8-1-1536x864.jpg",
     ],
-    pitch: "Des villas d'exception dans la communauté la plus prestigieuse des Caraïbes : marina, golf signature et plages privées.",
+    pitch: "Des villas d'exception dans l'une des communautés les plus recherchées des Caraïbes : marina, golfs signés Jack Nicklaus, plages Juanillo et Api, et piscine privée pour chaque villa.",
   },
 ];
 
