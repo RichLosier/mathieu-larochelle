@@ -124,13 +124,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .nav.is-solid { background: rgba(255, 248, 241, .86); color: var(--ink); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); padding-block: .7rem; box-shadow: 0 1px 0 var(--line); }
 .nav.is-hidden { translate: 0 -110%; }
 .brand { display: flex; align-items: center; gap: .8rem; }
-.brand__mark {
-  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--sunset); color: #fff; font-weight: 800; font-size: .9rem; letter-spacing: -.02em;
-  box-shadow: 0 8px 24px rgba(255,145,77,.35);
-}
+.brand__mark { width: 46px; height: 46px; flex: none; transition: transform .8s var(--ease); }
+.brand:hover .brand__mark { transform: rotate(-8deg) scale(1.06); }
 .brand__txt { line-height: 1.1; }
-.brand__txt strong { display: block; font-size: .95rem; letter-spacing: -.01em; }
+.brand__txt strong { display: block; font-size: 1.05rem; font-weight: 800; letter-spacing: -.02em; }
+.brand__txt strong em { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.18em; letter-spacing: 0; }
 .brand__txt small { font-size: .62rem; letter-spacing: .28em; text-transform: uppercase; opacity: .75; }
 .edition {
   display: inline-flex; align-items: center; gap: .45rem; margin-left: .4rem;
@@ -557,6 +555,7 @@ body.menu-open .nav .burger { background: var(--orange); }
   .nav { padding-top: calc(.8rem + env(safe-area-inset-top, 0px)); }
   .nav__cta { display: none; }
   .brand__mark { width: 40px; height: 40px; }
+  .brand__txt small { display: none; }
   .hero { min-height: 100svh; }
   .hero__media { inset: 0; background-image: url("assets/hero-film-poster-mobile.jpg"); }
   .hero__content { padding-bottom: calc(2.2rem + env(safe-area-inset-bottom, 0px)); }

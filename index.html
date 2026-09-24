@@ -36,8 +36,14 @@
 
   <header class="nav" id="nav">
     <a class="brand" href="#top" aria-label="Mathieu Larochelle, retour en haut">
-      <span class="brand__mark">ML</span>
-      <span class="brand__txt"><strong>Mathieu Larochelle</strong><small>Sunset Real Estate</small></span>
+      <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+        <defs><linearGradient id="bm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb784"/><stop offset="1" stop-color="#ff914d"/></linearGradient></defs>
+        <g stroke="#ff914d" stroke-width="2.2" stroke-linecap="round"><path d="M24 6v5"/><path d="M11.3 11.3l3.5 3.5"/><path d="M36.7 11.3l-3.5 3.5"/><path d="M6 24h5"/><path d="M42 24h-5"/></g>
+        <path d="M13 27a11 11 0 0 1 22 0z" fill="url(#bm)"/>
+        <path d="M6 32c3 0 3-2.4 6-2.4s3 2.4 6 2.4 3-2.4 6-2.4 3 2.4 6 2.4 3-2.4 6-2.4 3 2.4 6 2.4" fill="none" stroke="#16bfbf" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M11 38.5c2.6 0 2.6-2 5.2-2s2.6 2 5.2 2 2.6-2 5.2-2 2.6 2 5.2 2 2.6-2 5.2-2" fill="none" stroke="#16bfbf" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+      </svg>
+      <span class="brand__txt"><strong>Mathieu <em>Larochelle</em></strong><small>Courtier · Sunset Real Estate</small></span>
     </a>
     <nav class="nav__links" aria-label="Navigation principale">
       <a href="#projets">Projets</a>
