@@ -75,7 +75,7 @@
           <p style="font-size:.78rem;color:var(--muted)">Prix et disponibilités sujets à changement; Mathieu confirme les unités à jour avant toute réservation.</p>
           <div style="display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.4rem">
             <a class="btn btn--sun" href="https://calendly.com/mlarochelle-sunsetrealestate" target="_blank" rel="noopener">Réserver une visite <span class="arrow" aria-hidden="true">→</span></a>
-            <a class="btn btn--dark" href="mailto:mlarochelle@sunsetrealestate.ca?subject=${encodeURIComponent("Fiche " + p.name)}">Recevoir la brochure</a>
+            <a class="btn btn--dark" href="mailto:mlarochelle@sunsetrealestate.ca?subject=${encodeURIComponent("Brochure " + p.name)}&body=${encodeURIComponent("Bonjour Mathieu, j'aimerais recevoir la brochure et les prix à jour de " + p.name + ".")}">Recevoir la brochure</a>
           </div>
         </div>
         <div class="modal__gallery">${p.gallery.map((g, i) => `<img src="${g}" alt="${p.name}, image ${i + 1}" loading="lazy">`).join("")}</div>

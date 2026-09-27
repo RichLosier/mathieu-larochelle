@@ -25,7 +25,7 @@ window.PROJECTS = [
     price: "283 500 $ US",
     cover: "assets/moon-building.jpg",
     gallery: ["assets/moon-building.jpg", "assets/moon-garden-2.jpg", "assets/mathieu-on-site.jpg"],
-    pitch: "La deuxième phase de Moon Garden à Coral Golf Resort : une piscine privée pour chaque unité, une gestion hôtelière Garrya (Banyan Group) et un programme locatif géré.",
+    pitch: "La deuxième phase de Moon Garden à Coral Golf Resort : accès direct à la piscine au rez-de-chaussée, picuzzi privé aux étages, unités meublées et une gestion hôtelière prévue avec Garrya (Banyan Group).",
   },
   {
     id: "ac-residences",
@@ -33,7 +33,7 @@ window.PROJECTS = [
     location: "Cap Cana, République dominicaine",
     type: "Condo · Résidence de marque",
     stage: "Sur plan",
-    price: "552 900 $ US",
+    price: "776 042 $ US",
     cover: "assets/sunset/2026-09-02-1536x1089.jpg",
     gallery: [
       "assets/sunset/2026-09-02-1536x1089.jpg",
@@ -50,7 +50,7 @@ window.PROJECTS = [
     location: "Cap Cana, République dominicaine",
     type: "Condo",
     stage: "Sur plan",
-    price: "359 000 $ US",
+    price: "356 000 $ US",
     cover: "assets/sunset/2026-09-3-1536x1119.jpg",
     gallery: [
       "assets/sunset/2026-09-3-1536x1119.jpg",
