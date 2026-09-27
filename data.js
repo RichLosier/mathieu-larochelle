@@ -17,6 +17,23 @@ window.PROJECTS = [
     pitch: "Le projet d'entrée idéal pour posséder dans un vrai domaine de villégiature : piscines lagons, golf et services, à quelques minutes des plages de Punta Cana.",
   },
   {
+    id: "azzure",
+    name: "Azzure at Coral Golf",
+    location: "Coral Golf Resort · Cabeza de Toro, Punta Cana",
+    type: "Condo",
+    stage: "Sur plan",
+    price: "138 500 $ US",
+    cover: "assets/azzure-1.jpg",
+    gallery: [
+      "assets/azzure-1.jpg",
+      "assets/azzure-facade.jpg",
+      "assets/azzure-piscine.jpg",
+      "assets/azzure-salon.jpg",
+      "assets/azzure-lobby.jpg",
+    ],
+    pitch: "115 appartements face au golf de 18 trous redessiné par P.B. Dye, réalisés par Bluewave Group et opérés par BlueStays. Du 1 au 3 chambres, livraison prévue en septembre 2028.",
+  },
+  {
     id: "moon-garden-2",
     name: "Moon Garden 2",
     location: "Coral Golf Resort · Cabeza de Toro, Punta Cana",
@@ -60,22 +77,6 @@ window.PROJECTS = [
       "assets/sunset/2026-09-6-584x438.jpg",
     ],
     pitch: "Sur le golf Las Iguanas à Cap Cana, près de la plage Juanillo et d'une lagune cristalline : un format condo pour profiter de l'hiver au soleil.",
-  },
-  {
-    id: "cap-cana-villas",
-    name: "Cap Cana Villas",
-    location: "Cap Cana, République dominicaine",
-    type: "Villa de luxe",
-    stage: "Sur plan",
-    price: "3 700 000 $ US",
-    cover: "assets/sunset/2026-09-1-1536x864.jpg",
-    gallery: [
-      "assets/sunset/2026-09-1-1536x864.jpg",
-      "assets/sunset/2026-09-12-1536x864.jpg",
-      "assets/sunset/2026-09-5-1536x1033.jpg",
-      "assets/sunset/2026-09-8-1-1536x864.jpg",
-    ],
-    pitch: "Des villas d'exception dans l'une des communautés les plus recherchées des Caraïbes : marina, golfs signés Jack Nicklaus, plages Juanillo et Api, et piscine privée pour chaque villa.",
   },
 ];
 
