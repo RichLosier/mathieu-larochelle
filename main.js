@@ -1,3 +1,12 @@
+/* ---------- Réglages à brancher ----------
+   LEAD_ENDPOINT : URL complète du POST /lead du Worker Sunset (ex. https://<worker>.workers.dev/lead).
+   Les clics (Calendly, WhatsApp, appel) partent vers le même hôte, route /event. Vide = repli par courriel.
+   META_PIXEL_ID : identifiant du pixel Meta de Sunset/Mathieu (PAS celui d'iFiveMe). Vide = aucun pixel chargé. */
+const LEAD_ENDPOINT = "https://sunset-meta-worker.sweet-frog-ea74.workers.dev/lead";
+const META_PIXEL_ID = "";
+const EVENT_ENDPOINT = LEAD_ENDPOINT.replace(/\/lead\/?$/, "/event");
+const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
+
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -110,14 +119,97 @@
     }
   });
 
-  /* ---------- Contact form -> WhatsApp ---------- */
-  $("#contactForm").addEventListener("submit", (e) => {
+  /* ---------- Pixel Meta (inactif tant que META_PIXEL_ID est vide) ---------- */
+  if (META_PIXEL_ID) {
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = "2.0"; n.queue = [];
+      t = b.createElement(e); t.async = true; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    fbq("init", META_PIXEL_ID); fbq("track", "PageView");
+  }
+  const pixel = (name) => { try { if (META_PIXEL_ID && window.fbq) fbq("track", name); } catch (_) { /* ignore */ } };
+
+  /* ---------- Clics suivis (Calendly, WhatsApp, appel) : un seul écouteur ---------- */
+  const beacon = (name) => {
+    if (!EVENT_ENDPOINT) return;
+    try {
+      const body = JSON.stringify({ event: name });
+      if (!(navigator.sendBeacon && navigator.sendBeacon(EVENT_ENDPOINT, new Blob([body], { type: "text/plain" })))) {
+        fetch(EVENT_ENDPOINT, { method: "POST", body, keepalive: true, mode: "cors" }).catch(() => {});
+      }
+    } catch (_) { /* ignore */ }
+  };
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[href]");
+    if (!a) return;
+    const h = a.getAttribute("href");
+    if (/calendly\.com/i.test(h)) { beacon("calendly"); pixel("Schedule"); }
+    else if (/wa\.me\//i.test(h)) { beacon("whatsapp"); pixel("Contact"); }
+    else if (/^tel:/i.test(h)) { beacon("appel"); pixel("Contact"); }
+  });
+
+  /* ---------- Contact form -> /lead puis WhatsApp ---------- */
+  const trackingParams = () => {
+    const out = {};
+    let saved = {};
+    try { saved = JSON.parse(sessionStorage.getItem("utm") || "{}"); } catch (_) { /* ignore */ }
+    const q = new URLSearchParams(location.search);
+    ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((k) => {
+      const v = q.get(k) || saved[k];
+      if (v) out[k] = v;
+    });
+    try { sessionStorage.setItem("utm", JSON.stringify(out)); } catch (_) { /* ignore */ }
+    return out;
+  };
+  trackingParams();
+  const form = $("#contactForm");
+  const formError = $("#formError");
+  const showError = (msg, field) => { formError.textContent = msg; formError.hidden = false; field?.focus(); };
+  form.addEventListener("input", () => { formError.hidden = true; });
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const f = new FormData(e.target);
-    const nom = (f.get("nom") || "").toString().trim();
-    if (!nom) { e.target.nom.focus(); return; }
-    const text = `Bonjour Mathieu, c'est ${nom}.\n${f.get("message") || "J'aimerais en savoir plus sur vos projets."}\nDestination : ${f.get("destination")}${f.get("tel") ? `\nTéléphone : ${f.get("tel")}` : ""}`;
-    $("#formWa").href = `https://wa.me/14188091413?text=${encodeURIComponent(text)}`;
+    const f = new FormData(form);
+    const val = (k) => (f.get(k) || "").toString().trim();
+    const nom = val("nom"), courriel = val("courriel"), tel = val("tel"), dest = val("destination");
+    const message = val("message") || "J'aimerais en savoir plus sur vos projets.";
+    if (nom.length < 2) return showError("Entrez votre nom.", form.nom);
+    if (!courriel && !tel) return showError("Entrez un courriel ou un téléphone pour que Mathieu puisse vous répondre.", form.courriel);
+    if (courriel && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(courriel)) return showError("Ce courriel semble incomplet.", form.courriel);
+    if (tel && tel.replace(/\D/g, "").length < 7) return showError("Ce numéro de téléphone semble incomplet.", form.tel);
+    if (!form.consentement.checked) return showError("Cochez la case de consentement pour envoyer votre demande.", form.consentement);
+
+    const text = `Bonjour Mathieu, c'est ${nom}.\n${message}\nDestination : ${dest}${tel ? `\nTéléphone : ${tel}` : ""}`;
+    const wa = `https://wa.me/14188091413?text=${encodeURIComponent(text)}`;
+    const submit = form.querySelector("[type=submit]");
+    submit.disabled = true;
+    const payload = {
+      nom, courriel, telephone: tel, message, projet: dest, lang: "fr", consentement: true,
+      website: val("website"), utm: trackingParams(), referrer: document.referrer || "", page: location.origin + location.pathname,
+    };
+    let ok = false;
+    if (LEAD_ENDPOINT) {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 8000);
+      try {
+        const r = await fetch(LEAD_ENDPOINT, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), signal: ctl.signal });
+        ok = r.ok;
+      } catch (_) { ok = false; }
+      clearTimeout(timer);
+    }
+    submit.disabled = false;
+    $("#formWa").href = wa;
+    const msg = $("#formReadyMsg");
+    let mail = $("#formMail");
+    if (ok) {
+      pixel("Lead");
+      msg.textContent = "Votre demande est envoyée à Mathieu. Il vous répond rapidement. Vous pouvez aussi lui écrire tout de suite sur WhatsApp.";
+      mail?.remove();
+    } else {
+      msg.textContent = "L'envoi automatique n'a pas fonctionné. Écrivez à Mathieu par courriel ou sur WhatsApp, votre message est déjà préparé.";
+      if (!mail) { mail = document.createElement("a"); mail.id = "formMail"; mail.className = "btn btn--sun"; mail.textContent = "Envoyer par courriel"; $("#formReady").appendChild(mail); }
+      mail.href = `mailto:${FALLBACK_MAIL}?subject=${encodeURIComponent("Projet immobilier au soleil")}&body=${encodeURIComponent(text + (courriel ? `\nCourriel : ${courriel}` : ""))}`;
+    }
     $("#formReady").hidden = false;
     $("#formWa").focus();
   });

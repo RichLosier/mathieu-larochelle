@@ -31,7 +31,7 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 
@@ -43,7 +43,7 @@ body {
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body.is-loading { overflow: hidden; }
@@ -448,7 +448,21 @@ section { position: relative; }
   transition: border-color .3s, box-shadow .3s;
 }
 .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px rgba(22,191,191,.18); }
-.form__legal { font-size: .74rem; color: var(--muted); margin: .2rem 0 1.2rem; }
+.field--hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.check { position: relative; display: flex; align-items: flex-start; gap: .75rem; margin: .2rem 0 1.2rem; cursor: pointer; }
+.check input { position: absolute; opacity: 0; width: 1.4rem; height: 1.4rem; margin: 0; cursor: pointer; }
+.check__box { flex: none; width: 1.4rem; height: 1.4rem; margin-top: .1rem; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; display: grid; place-items: center; transition: background .3s, border-color .3s, box-shadow .3s; }
+.check__box::after { content: ""; width: .7rem; height: .4rem; border-left: 2.5px solid #fff; border-bottom: 2.5px solid #fff; rotate: -45deg; translate: 0 -1px; scale: 0; transition: scale .3s var(--ease); }
+.check input:checked + .check__box { background: var(--teal); border-color: var(--teal); }
+.check input:checked + .check__box::after { scale: 1; }
+.check input:focus-visible + .check__box { box-shadow: 0 0 0 4px rgba(22,191,191,.28); }
+.check__txt { font-size: .78rem; line-height: 1.5; color: var(--muted); }
+.check__txt a { color: var(--teal-deep); text-decoration: underline; text-underline-offset: 3px; }
+.form__error { margin: -.4rem 0 1rem; padding: .7rem 1rem; border-radius: 12px; background: #fff0e6; color: var(--orange-deep); font-size: .82rem; font-weight: 600; }
+.form__ready { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; }
+.form__ready[hidden] { display: none; }
+.form__ready p { flex: 1 0 100%; }
+.footer__links { display: inline-flex; gap: 1.6rem; }
 @media (min-width: 640px) { .form__row { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1000px) { .contact__grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
 
@@ -549,7 +563,7 @@ body.menu-open .nav .burger { background: var(--orange); }
 
 .projects__swipe { display: none; }
 .form__ready { margin-top: 1rem; padding: 1rem; border-radius: 16px; background: var(--mist); }
-.form__ready p { margin: 0 0 .7rem; font-weight: 600; }
+.form__ready p { margin: 0 0 .1rem; font-weight: 600; }
 
 @media (max-width: 767px) {
   .nav { padding-top: calc(.8rem + env(safe-area-inset-top, 0px)); }
@@ -591,3 +605,14 @@ body.menu-open .nav .burger { background: var(--orange); }
   .modal__facts { grid-template-columns: 1fr 1fr; }
 }
 html:not(.lenis) { scroll-behavior: smooth; }
+
+/* ---------- Page confidentialité ---------- */
+.legal-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem var(--gutter); background: var(--ink); color: #fff; }
+.legal-top .btn { min-height: 44px; padding: .6rem 1.2rem; font-size: .72rem; }
+.legal { max-width: 46rem; margin: 0 auto; padding: clamp(3rem, 7vw, 6rem) var(--gutter) clamp(4rem, 8vw, 7rem); color: var(--char); }
+.legal h1 { margin: .8rem 0 1.2rem; font-size: clamp(2.2rem, 6vw, 3.8rem); line-height: 1.02; letter-spacing: -.045em; font-weight: 800; color: var(--ink); }
+.legal h2 { margin: 2.6rem 0 .7rem; font-size: 1.3rem; letter-spacing: -.02em; color: var(--ink); }
+.legal p, .legal li { font-size: 1rem; line-height: 1.7; }
+.legal ul { padding-left: 1.2rem; }
+.legal a { color: var(--teal-deep); text-decoration: underline; text-underline-offset: 3px; }
+.legal__date { color: var(--muted); font-size: .82rem; }
