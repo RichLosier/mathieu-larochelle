@@ -3,7 +3,7 @@
    Les clics (Calendly, WhatsApp, appel) partent vers le même hôte, route /event. Vide = repli par courriel.
    META_PIXEL_ID : identifiant du pixel Meta de Sunset/Mathieu (PAS celui d'iFiveMe). Vide = aucun pixel chargé. */
 const LEAD_ENDPOINT = "https://sunset-meta-worker.sweet-frog-ea74.workers.dev/lead";
-const META_PIXEL_ID = "";
+const META_PIXEL_ID = "1124685616721962";
 const EVENT_ENDPOINT = LEAD_ENDPOINT.replace(/\/lead\/?$/, "/event");
 const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
 
@@ -119,14 +119,32 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     }
   });
 
-  /* ---------- Pixel Meta (inactif tant que META_PIXEL_ID est vide) ---------- */
-  if (META_PIXEL_ID) {
+  /* ---------- Pixel Meta : chargé seulement avec l'accord du visiteur (Loi 25) ---------- */
+  const CONSENT_KEY = "sunset-pixel-consent";
+  const readConsent = () => { try { return localStorage.getItem(CONSENT_KEY); } catch (_) { return null; } };
+  const saveConsent = (v) => { try { localStorage.setItem(CONSENT_KEY, v); } catch (_) { /* ignore */ } };
+  const loadPixel = () => {
+    if (window.fbq) return;
     !(function (f, b, e, v, n, t, s) {
-      if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
       if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = "2.0"; n.queue = [];
       t = b.createElement(e); t.async = true; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
     })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
     fbq("init", META_PIXEL_ID); fbq("track", "PageView");
+  };
+  if (META_PIXEL_ID) {
+    const choice = readConsent();
+    if (choice === "yes") loadPixel();
+    else if (!choice) {
+      const bar = document.createElement("div");
+      bar.className = "consent"; bar.setAttribute("role", "dialog"); bar.setAttribute("aria-label", "Mesure publicitaire");
+      bar.innerHTML = '<p>Ce site peut utiliser un pixel publicitaire (Meta) pour mesurer l\u2019efficacit\u00e9 de ses annonces. <a href="confidentialite.html">En savoir plus</a></p><div class="consent__btns"><button type="button" class="btn btn--ghost" data-c="no">Refuser</button><button type="button" class="btn btn--sun" data-c="yes">Accepter</button></div>';
+      bar.addEventListener("click", (e) => {
+        const c = e.target.closest("[data-c]"); if (!c) return;
+        saveConsent(c.dataset.c); bar.remove(); if (c.dataset.c === "yes") loadPixel();
+      });
+      document.body.appendChild(bar);
+    }
   }
   const pixel = (name) => { try { if (META_PIXEL_ID && window.fbq) fbq("track", name); } catch (_) { /* ignore */ } };
 
