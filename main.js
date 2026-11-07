@@ -123,6 +123,21 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
   const CONSENT_KEY = "sunset-pixel-consent";
   const readConsent = () => { try { return localStorage.getItem(CONSENT_KEY); } catch (_) { return null; } };
   const saveConsent = (v) => { try { localStorage.setItem(CONSENT_KEY, v); } catch (_) { /* ignore */ } };
+  /* Événements du pixel + relais serveur (API de conversions) : même event_id des deux côtés pour que Meta ne compte qu'une fois. */
+  const CAPI_ENDPOINT = LEAD_ENDPOINT ? LEAD_ENDPOINT.replace(/\/lead$/, "/capi") : "";
+  const newId = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const cookie = (n) => { const m = document.cookie.match(new RegExp(`(?:^|; )${n}=([^;]*)`)); return m ? decodeURIComponent(m[1]) : ""; };
+  const metaIds = () => ({ fbp: cookie("_fbp"), fbc: cookie("_fbc") });
+  const pixel = (name, eventId = newId()) => {
+    try {
+      if (!(META_PIXEL_ID && window.fbq && readConsent() === "yes")) return eventId;
+      fbq("track", name, {}, { eventID: eventId });
+      if (CAPI_ENDPOINT && name !== "Lead") {
+        fetch(CAPI_ENDPOINT, { method: "POST", body: JSON.stringify({ event_name: name, event_id: eventId, url: location.origin + location.pathname, pixel_consent: true, ...metaIds() }), keepalive: true, mode: "cors" }).catch(() => {});
+      }
+    } catch (_) { /* ignore */ }
+    return eventId;
+  };
   const loadPixel = () => {
     if (window.fbq) return;
     !(function (f, b, e, v, n, t, s) {
@@ -130,7 +145,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
       if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = "2.0"; n.queue = [];
       t = b.createElement(e); t.async = true; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
     })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-    fbq("init", META_PIXEL_ID); fbq("track", "PageView");
+    fbq("init", META_PIXEL_ID); pixel("PageView");
   };
   if (META_PIXEL_ID) {
     const choice = readConsent();
@@ -146,7 +161,6 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
       document.body.appendChild(bar);
     }
   }
-  const pixel = (name) => { try { if (META_PIXEL_ID && window.fbq) fbq("track", name); } catch (_) { /* ignore */ } };
 
   /* ---------- Clics suivis (Calendly, WhatsApp, appel) : un seul écouteur ---------- */
   const beacon = (name) => {
@@ -201,9 +215,11 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     const wa = `https://wa.me/14188091413?text=${encodeURIComponent(text)}`;
     const submit = form.querySelector("[type=submit]");
     submit.disabled = true;
+    const leadEventId = newId();
     const payload = {
       nom, courriel, telephone: tel, message, projet: dest, lang: "fr", consentement: true,
       website: val("website"), utm: trackingParams(), referrer: document.referrer || "", page: location.origin + location.pathname,
+      event_id: leadEventId, pixel_consent: readConsent() === "yes", ...metaIds(),
     };
     let ok = false;
     if (LEAD_ENDPOINT) {
@@ -220,7 +236,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     const msg = $("#formReadyMsg");
     let mail = $("#formMail");
     if (ok) {
-      pixel("Lead");
+      pixel("Lead", leadEventId);
       msg.textContent = "Votre demande est envoyée à Mathieu. Il vous répond rapidement. Vous pouvez aussi lui écrire tout de suite sur WhatsApp.";
       mail?.remove();
     } else {
