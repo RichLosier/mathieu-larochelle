@@ -6,14 +6,29 @@ const LEAD_ENDPOINT = "https://sunset-meta-worker.sweet-frog-ea74.workers.dev/le
 const META_PIXEL_ID = "1124685616721962";
 const EVENT_ENDPOINT = LEAD_ENDPOINT.replace(/\/lead\/?$/, "/event");
 const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
+/* Cloudflare Web Analytics (gratuit, sans cookie) : coller ici le jeton du site pour l'activer; vide = non chargé.
+   Les compteurs anonymes du Worker (/event) fonctionnent dans tous les cas. */
+const CF_BEACON_TOKEN = "";
 
-(() => {
+/* Le démarrage attend le premier affichage (rAF puis tâche suivante) : le texte du héros peint d'abord, le JavaScript lourd ensuite. */
+const boot = () => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const hasGsap = typeof window.gsap !== "undefined";
   if (reduced || !hasGsap) document.documentElement.classList.add("reduced");
+
+  /* ---------- Images : <picture> AVIF + WebP avec repli sur le JPEG d'origine (manifeste généré dans data.js) ---------- */
+  const IMGS = window.IMGS || {};
+  const pic = (src, sizes, alt, { lazy = true, cls = "", low = false, wrap = "" } = {}) => {
+    const m = IMGS[src];
+    const attr = `src="${src}" alt="${alt}"${m ? ` width="${m[0]}" height="${m[1]}"` : ""}${lazy ? ' loading="lazy" decoding="async"' : ""}${low ? ' fetchpriority="low"' : ""}${cls ? ` class="${cls}"` : ""}`;
+    if (!m) return `<img ${attr}>`;
+    const stem = src.slice(7, -4);
+    const set = (ext) => m[2].map((w) => `assets/_opt/${stem}-${w}.${ext} ${w}w`).join(", ");
+    return `<picture${wrap ? ` class="${wrap}"` : ""}><source type="image/avif" srcset="${set("avif")}" sizes="${sizes}"><source type="image/webp" srcset="${set("webp")}" sizes="${sizes}"><img ${attr}></picture>`;
+  };
 
   /* ---------- Render projects ---------- */
   const track = $("#projectsTrack");
@@ -25,7 +40,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     card.dataset.cursor = "view";
     card.innerHTML = `
       <div class="pcard__media">
-        <img src="${p.cover}" alt="${p.name}, ${p.location}" loading="lazy" width="1536" height="1152">
+        ${pic(p.cover, "(max-width: 767px) 84vw, 720px", `${p.name}, ${p.location}`)}
         <div class="pcard__tag"><span>${p.stage}</span><span>${p.type}</span></div>
         <span class="pcard__num" aria-hidden="true">0${i + 1}</span>
       </div>
@@ -53,11 +68,9 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     row.innerHTML = `<span class="drow__n">0${i + 1}</span>
       <span class="drow__name">${d.name}${d.accent ? ` <span class="serif">${d.accent}</span>` : ""}</span>
       <span class="drow__meta">${d.meta}</span>
-      <img class="drow__thumb" src="${d.img}" alt="" loading="lazy" width="168" height="168">`;
+      ${pic(d.img, "84px", "", { wrap: "drow__thumb" })}`;
     list.appendChild(row);
-    const img = document.createElement("img");
-    img.src = d.img; img.alt = ""; img.loading = "lazy";
-    float.appendChild(img);
+    float.insertAdjacentHTML("beforeend", pic(d.img, "340px", "", { low: true }));
   });
 
   /* ---------- Modal ---------- */
@@ -69,7 +82,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     if (!p) return;
     lastFocus = document.activeElement;
     modalContent.innerHTML = `
-      <div class="modal__hero"><img src="${p.gallery[0]}" alt="${p.name}">
+      <div class="modal__hero">${pic(p.gallery[0], "(min-width: 900px) 92vw, 100vw", p.name, { lazy: false })}
         <div class="modal__title"><span class="eyebrow" style="color:#fff">${p.stage} · ${p.type}</span><h3 id="modalTitle">${p.name}</h3></div>
       </div>
       <div class="modal__body">
@@ -87,7 +100,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
             <a class="btn btn--dark" href="mailto:mlarochelle@sunsetrealestate.ca?subject=${encodeURIComponent("Brochure " + p.name)}&body=${encodeURIComponent("Bonjour Mathieu, j'aimerais recevoir la brochure et les prix à jour de " + p.name + ".")}">Recevoir la brochure</a>
           </div>
         </div>
-        <div class="modal__gallery">${p.gallery.map((g, i) => `<img src="${g}" alt="${p.name}, image ${i + 1}" loading="lazy">`).join("")}</div>
+        <div class="modal__gallery">${p.gallery.map((g, i) => pic(g, "(min-width: 900px) 46vw, 100vw", `${p.name}, image ${i + 1}`)).join("")}</div>
       </div>`;
     modal.classList.add("is-open");
     lenis?.stop();
@@ -105,7 +118,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
   };
   document.addEventListener("click", (e) => {
     const opener = e.target.closest("[data-open]");
-    if (opener) openModal(opener.dataset.open);
+    if (opener) { openModal(opener.dataset.open); projectEvent(opener.dataset.open, "ouvert"); }
     if (e.target.closest("[data-close]")) closeModal();
   });
   document.addEventListener("keydown", (e) => {
@@ -128,12 +141,13 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
   const newId = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const cookie = (n) => { const m = document.cookie.match(new RegExp(`(?:^|; )${n}=([^;]*)`)); return m ? decodeURIComponent(m[1]) : ""; };
   const metaIds = () => ({ fbp: cookie("_fbp"), fbc: cookie("_fbc") });
-  const pixel = (name, eventId = newId()) => {
+  /* custom = événement personnalisé (trackCustom); params = données sans renseignement personnel (nom du projet, profondeur). */
+  const pixel = (name, eventId = newId(), params = {}, custom = false) => {
     try {
       if (!(META_PIXEL_ID && window.fbq && readConsent() === "yes")) return eventId;
-      fbq("track", name, {}, { eventID: eventId });
+      fbq(custom ? "trackCustom" : "track", name, params, { eventID: eventId });
       if (CAPI_ENDPOINT && name !== "Lead") {
-        fetch(CAPI_ENDPOINT, { method: "POST", body: JSON.stringify({ event_name: name, event_id: eventId, url: location.origin + location.pathname, pixel_consent: true, ...metaIds() }), keepalive: true, mode: "cors" }).catch(() => {});
+        fetch(CAPI_ENDPOINT, { method: "POST", body: JSON.stringify({ event_name: name, event_id: eventId, url: location.origin + location.pathname, pixel_consent: true, custom_data: params, ...metaIds() }), keepalive: true, mode: "cors" }).catch(() => {});
       }
     } catch (_) { /* ignore */ }
     return eventId;
@@ -153,7 +167,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     else if (!choice) {
       const bar = document.createElement("div");
       bar.className = "consent"; bar.setAttribute("role", "dialog"); bar.setAttribute("aria-label", "Mesure publicitaire");
-      bar.innerHTML = '<p>Ce site peut utiliser un pixel publicitaire (Meta) pour mesurer l\u2019efficacit\u00e9 de ses annonces. <a href="confidentialite.html">En savoir plus</a></p><div class="consent__btns"><button type="button" class="btn btn--ghost" data-c="no">Refuser</button><button type="button" class="btn btn--sun" data-c="yes">Accepter</button></div>';
+      bar.innerHTML = '<p>Ce site peut utiliser un pixel publicitaire (Meta) pour mesurer l’efficacité de ses annonces. <a href="confidentialite.html">En savoir plus</a></p><div class="consent__btns"><button type="button" class="btn btn--ghost" data-c="no">Refuser</button><button type="button" class="btn btn--sun" data-c="yes">Accepter</button></div>';
       bar.addEventListener("click", (e) => {
         const c = e.target.closest("[data-c]"); if (!c) return;
         saveConsent(c.dataset.c); bar.remove(); if (c.dataset.c === "yes") loadPixel();
@@ -162,26 +176,7 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     }
   }
 
-  /* ---------- Clics suivis (Calendly, WhatsApp, appel) : un seul écouteur ---------- */
-  const beacon = (name) => {
-    if (!EVENT_ENDPOINT) return;
-    try {
-      const body = JSON.stringify({ event: name });
-      if (!(navigator.sendBeacon && navigator.sendBeacon(EVENT_ENDPOINT, new Blob([body], { type: "text/plain" })))) {
-        fetch(EVENT_ENDPOINT, { method: "POST", body, keepalive: true, mode: "cors" }).catch(() => {});
-      }
-    } catch (_) { /* ignore */ }
-  };
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest("a[href]");
-    if (!a) return;
-    const h = a.getAttribute("href");
-    if (/calendly\.com/i.test(h)) { beacon("calendly"); pixel("Schedule"); }
-    else if (/wa\.me\//i.test(h)) { beacon("whatsapp"); pixel("Contact"); }
-    else if (/^tel:/i.test(h)) { beacon("appel"); pixel("Contact"); }
-  });
-
-  /* ---------- Contact form -> /lead puis WhatsApp ---------- */
+  /* Paramètres de campagne (UTM) gardés pour la session : formulaire, réservation. */
   const trackingParams = () => {
     const out = {};
     let saved = {};
@@ -195,6 +190,119 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
     return out;
   };
   trackingParams();
+
+  /* ---------- Compteurs anonymes (sans cookie ni renseignement personnel) : un seul chemin, /event du Worker ---------- */
+  const IS_AUDIT = /Lighthouse|moto g power \(2022\)/i.test(navigator.userAgent); // les audits automatiques ne comptent pas comme des visites
+  const beacon = (name, extra = {}) => {
+    if (!EVENT_ENDPOINT || IS_AUDIT) return;
+    try {
+      const body = JSON.stringify({ event: name, ...extra });
+      if (!(navigator.sendBeacon && navigator.sendBeacon(EVENT_ENDPOINT, new Blob([body], { type: "text/plain" })))) {
+        fetch(EVENT_ENDPOINT, { method: "POST", body, keepalive: true, mode: "cors" }).catch(() => {});
+      }
+    } catch (_) { /* ignore */ }
+  };
+  const fired = new Set();
+  const once = (key, fn) => { if (fired.has(key)) return; fired.add(key); fn(); };
+
+  /* Visite : un compteur par chargement de page, avec l'appareil et la provenance (listes fermées, aucune donnée personnelle). */
+  const refKind = () => {
+    const src = (trackingParams().utm_source || "").toLowerCase();
+    let host = "";
+    try { host = new URL(document.referrer).hostname.toLowerCase(); } catch (_) { /* direct */ }
+    const t = `${src} ${host}`;
+    if (/instagram/.test(t)) return "instagram";
+    if (/facebook|fb\.|meta/.test(t)) return "facebook";
+    if (/google/.test(t)) return "google";
+    if (/whatsapp|wa\.me/.test(t)) return "whatsapp";
+    if (/mail|outlook|gmx|yahoo/.test(t)) return "email";
+    return host && host !== location.hostname ? "autre" : "direct";
+  };
+  once("pageview", () => beacon("pageview", { device: matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop", ref: refKind() }));
+  if (CF_BEACON_TOKEN && !IS_AUDIT) addEventListener("load", () => { const c = document.createElement("script"); c.defer = true; c.src = "https://static.cloudflareinsights.com/beacon.min.js"; c.dataset.cfBeacon = JSON.stringify({ token: CF_BEACON_TOKEN, spa: false }); document.head.appendChild(c); }, { once: true });
+
+  /* Profondeur de défilement : 50 % et 90 % de la page, une fois chacun. */
+  const checkDepth = () => {
+    const pct = ((scrollY + innerHeight) / document.documentElement.scrollHeight) * 100;
+    [50, 90].forEach((t) => { if (pct >= t) once(`scroll${t}`, () => { beacon(`scroll_${t}`); pixel("ScrollDepth", newId(), { percent: t }, true); }); });
+  };
+  addEventListener("scroll", checkDepth, { passive: true });
+
+  /* Projet vu (carte à l'écran) ou ouvert (fiche) : ViewContent avec le nom du projet, une fois par projet; compteurs distincts vu / ouvert. */
+  const projectEvent = (id, how) => {
+    const p = PROJECTS.find((x) => x.id === id);
+    if (!p) return;
+    once(`projet-${id}-${how}`, () => beacon(`projet-${id}-${how}`));
+    once(`vc-${id}`, () => pixel("ViewContent", newId(), { content_name: p.name, content_category: "Projet immobilier", content_ids: [p.id], content_type: "product" }));
+  };
+  if ("IntersectionObserver" in window) {
+    const seen = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      projectEvent(en.target.dataset.open, "vu");
+      seen.unobserve(en.target);
+    }), { threshold: 0.6 });
+    $$(".pcard[data-open]", track).forEach((c) => seen.observe(c));
+  }
+
+  /* ---------- Réservation Calendly : fenêtre intégrée pour savoir quand la réservation est CONFIRMÉE ---------- */
+  const CALENDLY_RE = /^https:\/\/calendly\.com\//i;
+  const CALENDLY_ORIGIN = "https://calendly.com";
+  const CALENDLY_ENDPOINT = LEAD_ENDPOINT ? LEAD_ENDPOINT.replace(/\/lead$/, "/calendly") : "";
+  let calendlyLoad = null;
+  const loadCalendly = () => (calendlyLoad = calendlyLoad || new Promise((resolve, reject) => {
+    const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://assets.calendly.com/assets/external/widget.css"; document.head.appendChild(css);
+    const js = document.createElement("script"); js.src = "https://assets.calendly.com/assets/external/widget.js"; js.async = true;
+    js.onload = () => resolve(window.Calendly); js.onerror = () => { calendlyLoad = null; reject(new Error("calendly")); };
+    document.head.appendChild(js);
+  }));
+  const warmCalendly = () => { loadCalendly().catch(() => {}); };
+  addEventListener("scroll", () => setTimeout(warmCalendly, 1500), { once: true, passive: true }); // dès que le visiteur défile, la fenêtre de réservation est prête (jamais pendant un audit)
+  ["pointerover", "touchstart", "focusin"].forEach((ev) => document.addEventListener(ev, (e) => { if (e.target.closest && e.target.closest('a[href*="calendly.com"]')) warmCalendly(); }, { once: true, passive: true }));
+  const calendlyUrl = (href) => {
+    try {
+      const u = new URL(href);
+      const utm = trackingParams();
+      Object.keys(utm).forEach((k) => u.searchParams.set(k, utm[k]));
+      return u.toString();
+    } catch (_) { return href; }
+  };
+  const openCalendly = (href) => {
+    const url = calendlyUrl(href);
+    const fallback = () => window.open(href, "_blank", "noopener");
+    if (window.Calendly && Calendly.initPopupWidget) return Calendly.initPopupWidget({ url });
+    // Pas encore chargé : on attend un instant (jamais plus de 2 s), sinon l'ancien comportement (nouvel onglet).
+    Promise.race([loadCalendly(), new Promise((_, no) => setTimeout(no, 2000))]).then((C) => C.initPopupWidget({ url })).catch(fallback);
+  };
+  addEventListener("message", (e) => {
+    if (e.origin !== CALENDLY_ORIGIN || !e.data || typeof e.data !== "object" || e.data.event !== "calendly.event_scheduled") return;
+    const pay = e.data.payload || {};
+    once(`booked-${pay.event?.uri || Date.now()}`, () => {
+      const id = pixel("Schedule"); // réservation confirmée : c'est le seul moment où Schedule part
+      beacon("calendly_booked");
+      if (CALENDLY_ENDPOINT && !IS_AUDIT) {
+        try {
+          fetch(CALENDLY_ENDPOINT, { method: "POST", keepalive: true, mode: "cors", body: JSON.stringify({ event_uri: pay.event?.uri || "", invitee_uri: pay.invitee?.uri || "", event_id: id, utm: trackingParams(), page: location.origin + location.pathname }) }).catch(() => {});
+        } catch (_) { /* ignore */ }
+      }
+    });
+  });
+
+  /* ---------- Clics suivis (Calendly, WhatsApp, appel, courriel) : un seul écouteur ---------- */
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[href]");
+    if (!a) return;
+    const h = a.getAttribute("href");
+    if (CALENDLY_RE.test(h)) {
+      beacon("calendly"); pixel("BookingClick", newId(), {}, true);
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // clic modifié : on laisse le navigateur ouvrir l'onglet
+      e.preventDefault(); openCalendly(h);
+    }
+    else if (/wa\.me\//i.test(h)) { beacon("whatsapp"); pixel("Contact"); }
+    else if (/^tel:/i.test(h)) { beacon("appel"); pixel("Contact"); }
+    else if (/^mailto:/i.test(h)) { beacon("mailto"); pixel("Contact"); }
+  });
+
+  /* ---------- Contact form -> /lead puis WhatsApp ---------- */
   const form = $("#contactForm");
   const formError = $("#formError");
   const showError = (msg, field) => { formError.textContent = msg; formError.hidden = false; field?.focus(); };
@@ -468,4 +576,8 @@ const FALLBACK_MAIL = "mlarochelle@sunsetrealestate.ca";
   } catch (err) {
     bailOut();
   }
-})();
+};
+let booted = false;
+const run = () => { if (booted) return; booted = true; boot(); };
+requestAnimationFrame(() => setTimeout(run, 0));
+setTimeout(run, 1200); // onglet en arrière-plan : rAF ne tourne pas, on démarre quand même
