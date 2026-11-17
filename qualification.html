@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Faisons connaissance · Mathieu Larochelle</title>
+  <meta name="description" content="Quelques questions pour que Mathieu Larochelle, conseiller immobilier chez Sunset Real Estate, comprenne votre projet.">
+  <meta name="theme-color" content="#fff8f1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="icon" href="favicon.png" type="image/png" sizes="48x48">
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/og-icon.png">
+  <link rel="preload" href="assets/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-serif-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="qualification.css">
+  <script defer src="qualification.js"></script>
+</head>
+<body class="q-page">
+  <a class="skip" href="#main" data-i18n="skip">Aller au contenu</a>
+
+  <header class="q-top">
+    <a class="brand" href="./" data-i18n-aria="brandAria" aria-label="Retour au site de Mathieu Larochelle">
+      <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+        <defs><linearGradient id="bm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb784"/><stop offset="1" stop-color="#ff914d"/></linearGradient></defs>
+        <g stroke="#ff914d" stroke-width="2.2" stroke-linecap="round"><path d="M24 6v5"/><path d="M11.3 11.3l3.5 3.5"/><path d="M36.7 11.3l-3.5 3.5"/><path d="M6 24h5"/><path d="M42 24h-5"/></g>
+        <path d="M13 27a11 11 0 0 1 22 0z" fill="url(#bm)"/>
+        <path d="M6 32c3 0 3-2.4 6-2.4s3 2.4 6 2.4 3-2.4 6-2.4 3 2.4 6 2.4 3-2.4 6-2.4 3 2.4 6 2.4" fill="none" stroke="#16bfbf" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M11 38.5c2.6 0 2.6-2 5.2-2s2.6 2 5.2 2 2.6-2 5.2-2 2.6 2 5.2 2 2.6-2 5.2-2" fill="none" stroke="#16bfbf" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+      </svg>
+      <span class="brand__txt"><strong>Mathieu <em>Larochelle</em></strong><small data-i18n="role">Conseiller immobilier · Sunset Real Estate</small></span>
+    </a>
+    <div class="q-top__right">
+      <a class="q-sitelink" href="./" data-i18n="backSite">Retour au site</a>
+      <button class="q-lang" id="q-lang" type="button" lang="en" aria-label="Switch to English">EN</button>
+    </div>
+  </header>
+
+  <main class="q-main" id="main">
+    <div class="q-sun" aria-hidden="true"></div>
+    <div class="q-wrap">
+      <noscript><p class="q-note">Ce questionnaire demande JavaScript. Écrivez plutôt à Mathieu : <a href="mailto:mlarochelle@sunsetrealestate.ca">mlarochelle@sunsetrealestate.ca</a></p></noscript>
+
+      <div class="q-progress" id="q-progress" hidden>
+        <p class="eyebrow" id="q-progress-label" role="status" aria-live="polite"></p>
+        <div class="q-progress__track" id="q-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"><i class="q-progress__bar" id="q-progress-bar"></i></div>
+      </div>
+
+      <p class="q-loading" id="q-loading" hidden data-i18n="loading">Chargement de vos réponses…</p>
+
+      <form class="q-flow" id="q-form" novalidate autocomplete="on" hidden>
+        <div class="q-heads">
+          <div class="q-head" data-head="1" hidden>
+            <h1 class="q-title" tabindex="-1" data-i18n-html="h1"></h1>
+            <p class="q-lede" data-i18n="l1"></p>
+          </div>
+          <div class="q-head" data-head="2" hidden>
+            <h1 class="q-title" tabindex="-1" data-i18n-html="h2"></h1>
+            <p class="q-lede" data-i18n="l2"></p>
+          </div>
+          <div class="q-head" data-head="3" hidden>
+            <h1 class="q-title" tabindex="-1" data-i18n-html="h3"></h1>
+            <p class="q-lede" data-i18n="l3"></p>
+          </div>
+          <div class="q-head" data-head="4" hidden>
+            <h1 class="q-title" tabindex="-1" data-i18n-html="h4"></h1>
+            <p class="q-lede" data-i18n="l4"></p>
+          </div>
+          <div class="q-head" data-head="5" hidden>
+            <h1 class="q-title" tabindex="-1" data-i18n-html="h5"></h1>
+            <p class="q-lede" data-i18n="l5"></p>
+          </div>
+        </div>
+
+        <div class="q-panel">
+          <p class="q-note" id="q-resume" hidden></p>
+
+          <!-- Étape 1 -->
+          <section class="q-step" data-step="1" aria-labelledby="q-step1-name" hidden>
+            <h2 class="sr-only" id="q-step1-name" data-i18n="s1name">Vos coordonnées</h2>
+            <div class="q-row">
+              <div class="q-fieldwrap">
+                <label class="field" for="q-prenom"><span data-i18n="f.prenom">Prénom</span></label>
+                <input id="q-prenom" name="prenom" autocomplete="given-name" required aria-required="true" aria-describedby="q-err-prenom" maxlength="80" class="q-input">
+                <p class="q-err" id="q-err-prenom" hidden></p>
+              </div>
+            </div>
+            <div class="q-row q-row--2">
+              <div class="q-fieldwrap">
+                <label class="field" for="q-courriel"><span data-i18n="f.courriel">Courriel</span></label>
+                <input id="q-courriel" name="courriel" type="email" autocomplete="email" inputmode="email" aria-describedby="q-contact-hint q-err-courriel" maxlength="160" class="q-input">
+                <p class="q-err" id="q-err-courriel" hidden></p>
+              </div>
+              <div class="q-fieldwrap">
+                <label class="field" for="q-telephone"><span data-i18n="f.telephone">Téléphone</span></label>
+                <input id="q-telephone" name="telephone" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="q-contact-hint q-err-telephone" maxlength="40" class="q-input">
+                <p class="q-err" id="q-err-telephone" hidden></p>
+              </div>
+            </div>
+            <p class="q-hint q-hint--field" id="q-contact-hint" data-i18n="f.contactHint">Courriel ou téléphone : l'un des deux suffit.</p>
+            <label class="field field--hp" aria-hidden="true"><span>Site Web</span><input id="q-hp" name="hp" tabindex="-1" autocomplete="off"></label>
+            <div class="q-fieldwrap q-consent">
+              <label class="check" for="q-consent">
+                <input type="checkbox" id="q-consent" name="consentement" required aria-required="true" aria-describedby="q-err-consentement">
+                <span class="check__box" aria-hidden="true"></span>
+                <span class="check__txt" data-i18n-html="consent"></span>
+              </label>
+              <p class="q-err" id="q-err-consentement" hidden></p>
+            </div>
+          </section>
+
+          <!-- Étape 2 -->
+          <section class="q-step" data-step="2" aria-labelledby="q-step2-name" hidden>
+            <h2 class="sr-only" id="q-step2-name" data-i18n="s2name">Votre projet</h2>
+            <fieldset class="q-set" data-set="objectif">
+              <legend class="q-legend" data-i18n="q.objectif"></legend>
+              <p class="q-hint" data-i18n="hint.multi"></p>
+              <div class="q-opts" data-group="objectif"></div>
+              <p class="q-err" id="q-err-objectif" hidden></p>
+            </fieldset>
+            <fieldset class="q-set" data-set="destination">
+              <legend class="q-legend" data-i18n="q.destination"></legend>
+              <p class="q-hint" data-i18n="hint.multi"></p>
+              <div class="q-opts" data-group="destination"></div>
+              <p class="q-err" id="q-err-destination" hidden></p>
+            </fieldset>
+          </section>
+
+          <!-- Étape 3 -->
+          <section class="q-step" data-step="3" aria-labelledby="q-step3-name" hidden>
+            <h2 class="sr-only" id="q-step3-name" data-i18n="s3name">Budget et logement</h2>
+            <fieldset class="q-set" data-set="budget">
+              <legend class="q-legend" data-i18n="q.budget"></legend>
+              <p class="q-hint" data-i18n="hint.budget"></p>
+              <div class="q-opts" data-group="budget"></div>
+              <p class="q-err" id="q-err-budget" hidden></p>
+            </fieldset>
+            <fieldset class="q-set" data-set="chambres">
+              <legend class="q-legend" data-i18n="q.chambres"></legend>
+              <div class="q-opts" data-group="chambres"></div>
+              <p class="q-err" id="q-err-chambres" hidden></p>
+            </fieldset>
+            <fieldset class="q-set" data-set="financement">
+              <legend class="q-legend" data-i18n="q.financement"></legend>
+              <div class="q-opts" data-group="financement"></div>
+              <p class="q-err" id="q-err-financement" hidden></p>
+            </fieldset>
+          </section>
+
+          <!-- Étape 4 -->
+          <section class="q-step" data-step="4" aria-labelledby="q-step4-name" hidden>
+            <h2 class="sr-only" id="q-step4-name" data-i18n="s4name">Échéancier</h2>
+            <fieldset class="q-set" data-set="echeancier">
+              <legend class="q-legend" data-i18n="q.echeancier"></legend>
+              <div class="q-opts" data-group="echeancier"></div>
+              <p class="q-err" id="q-err-echeancier" hidden></p>
+            </fieldset>
+            <fieldset class="q-set" data-set="deja_visite">
+              <legend class="q-legend" data-i18n="q.deja_visite"></legend>
+              <div class="q-opts" data-group="deja_visite"></div>
+              <p class="q-err" id="q-err-deja_visite" hidden></p>
+            </fieldset>
+            <fieldset class="q-set" data-set="decideurs">
+              <legend class="q-legend" data-i18n="q.decideurs"></legend>
+              <div class="q-opts" data-group="decideurs"></div>
+              <p class="q-err" id="q-err-decideurs" hidden></p>
+            </fieldset>
+          </section>
+
+          <!-- Étape 5 -->
+          <section class="q-step" data-step="5" aria-labelledby="q-step5-name" hidden>
+            <h2 class="sr-only" id="q-step5-name" data-i18n="s5name">Comment vous joindre</h2>
+            <fieldset class="q-set" data-set="moyen">
+              <legend class="q-legend" data-i18n="q.moyen"></legend>
+              <p class="q-hint" data-i18n="hint.multi"></p>
+              <div class="q-opts" data-group="moyen"></div>
+              <p class="q-err" id="q-err-moyen" hidden></p>
+            </fieldset>
+            <fieldset class="q-set" data-set="moment">
+              <legend class="q-legend" data-i18n="q.moment"></legend>
+              <div class="q-opts" data-group="moment"></div>
+              <p class="q-err" id="q-err-moment" hidden></p>
+            </fieldset>
+            <div class="q-fieldwrap q-set">
+              <label class="field" for="q-mot"><span data-i18n="q.mot">Autre chose que Mathieu devrait savoir?</span></label>
+              <textarea id="q-mot" name="mot" rows="4" maxlength="600" class="q-input" aria-describedby="q-count q-err-mot" data-i18n-ph="f.motPh"></textarea>
+              <span class="q-count" id="q-count" aria-hidden="true">0 / 600</span>
+              <p class="q-err" id="q-err-mot" hidden></p>
+            </div>
+          </section>
+
+          <div class="form__error q-error" id="q-error" role="alert" hidden>
+            <span id="q-error-msg"></span>
+            <button class="q-retry" id="q-retry" type="button" hidden data-i18n="retry">Réessayer</button>
+          </div>
+
+          <div class="q-actions" id="q-actions">
+            <button class="btn btn--ghost" id="q-back" type="button" hidden><span class="arrow" aria-hidden="true">←</span> <span data-i18n="back">Retour</span></button>
+            <button class="btn btn--sun" id="q-next" type="button"><span id="q-next-label" data-i18n="next">Continuer</span> <span class="arrow" aria-hidden="true">→</span></button>
+            <button class="btn btn--sun" id="q-submit" type="button" hidden><span id="q-submit-label" data-i18n="submit">Envoyer à Mathieu</span> <span class="arrow" aria-hidden="true">→</span></button>
+          </div>
+          <p class="q-stop" id="q-stop-wrap" hidden><button class="q-stop__btn" id="q-stop" type="button" data-i18n="stop">Ne plus recevoir de rappel</button></p>
+        </div>
+      </form>
+
+      <section class="q-done" id="q-done" tabindex="-1" aria-labelledby="q-done-title" hidden>
+        <div class="sunmark" aria-hidden="true"></div>
+        <h1 class="q-title" id="q-done-title" tabindex="-1"></h1>
+        <p class="q-lede" data-i18n="doneP1"></p>
+        <p class="q-lede q-lede--soft" data-i18n="doneP2"></p>
+        <a class="btn btn--dark" href="./"><span data-i18n="backSite">Retour au site</span> <span class="arrow" aria-hidden="true">→</span></a>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__bar">
+      <span data-i18n="copy">© 2026 Mathieu Larochelle · Conseiller immobilier international, Sunset Real Estate</span>
+      <span class="footer__links"><a href="confidentialite.html" data-i18n="privacy">Confidentialité</a> <a href="./" data-i18n="backSite">Retour au site</a></span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -329,13 +329,14 @@ const boot = () => {
       website: val("website"), utm: trackingParams(), referrer: document.referrer || "", page: location.origin + location.pathname,
       event_id: leadEventId, pixel_consent: readConsent() === "yes", ...metaIds(),
     };
-    let ok = false;
+    let ok = false, formToken = "";
     if (LEAD_ENDPOINT) {
       const ctl = new AbortController();
       const timer = setTimeout(() => ctl.abort(), 8000);
       try {
         const r = await fetch(LEAD_ENDPOINT, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), signal: ctl.signal });
         ok = r.ok;
+        if (ok) { try { const j = await r.json(); if (j && typeof j.form_token === "string") formToken = j.form_token; } catch (_) { /* réponse sans jeton : comportement habituel */ } }
       } catch (_) { ok = false; }
       clearTimeout(timer);
     }
@@ -343,10 +344,17 @@ const boot = () => {
     $("#formWa").href = wa;
     const msg = $("#formReadyMsg");
     let mail = $("#formMail");
+    $("#formQual")?.remove();
     if (ok) {
       pixel("Lead", leadEventId);
       msg.textContent = "Votre demande est envoyée à Mathieu. Il vous répond rapidement. Vous pouvez aussi lui écrire tout de suite sur WhatsApp.";
       mail?.remove();
+      if (formToken) { // questionnaire de qualification : lien discret dans le message de succès
+        const q = document.createElement("p");
+        q.id = "formQual"; q.className = "form__qual";
+        q.innerHTML = `<a href="qualification.html?t=${encodeURIComponent(formToken)}&l=fr">Aidez Mathieu à mieux vous connaître (2 minutes) <span aria-hidden="true">→</span></a>`;
+        msg.after(q);
+      }
     } else {
       msg.textContent = "L'envoi automatique n'a pas fonctionné. Écrivez à Mathieu par courriel ou sur WhatsApp, votre message est déjà préparé.";
       if (!mail) { mail = document.createElement("a"); mail.id = "formMail"; mail.className = "btn btn--sun"; mail.textContent = "Envoyer par courriel"; $("#formReady").appendChild(mail); }

@@ -639,3 +639,6 @@ html:not(.lenis) { scroll-behavior: smooth; }
 .consent{position:fixed;left:16px;right:16px;bottom:16px;z-index:90;max-width:560px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:16px;background:var(--ink);color:#fff;font-size:.9rem;line-height:1.4;box-shadow:0 12px 40px rgba(12,28,33,.35)}
 .consent p{margin:0;flex:1 1 240px}.consent a{color:var(--teal-soft);text-decoration:underline;text-underline-offset:3px}
 .consent__btns{display:flex;gap:8px}
+.form__qual { margin: 0 0 .3rem; font-size: .88rem; }
+.form__qual a { color: var(--teal-deep); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.form__qual a:hover { color: var(--orange-deep); }
